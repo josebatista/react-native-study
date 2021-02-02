@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     },
     button: {
         // width: 100
-        width: Dimensions.get('window').width / 3
+        width: Dimensions.get('window').width / 4
     },
     input: {
         width: 50,
