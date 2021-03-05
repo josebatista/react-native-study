@@ -1,0 +1,12 @@
+{
+  "name": "the_meals_app",
+  "displayName": "the_meals_app",
+  "expo": {
+    "name": "the_meals_app",
+    "slug": "the_meals_app",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
