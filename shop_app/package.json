@@ -34,7 +34,8 @@
     "@babel/core": "~7.9.0",
     "babel-jest": "~25.2.6",
     "jest": "~25.2.6",
-    "react-test-renderer": "~16.13.1"
+    "react-test-renderer": "~16.13.1",
+    "redux-devtools-extension": "^2.13.9"
   },
   "jest": {
     "preset": "react-native"
