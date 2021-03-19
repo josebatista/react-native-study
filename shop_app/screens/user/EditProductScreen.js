@@ -118,8 +118,8 @@ const EditProductScreen = props => {
                         autoCorrect
                         returnKeyType='next'
                         onInputChange={inputChangeHandler}
-                        initialValue={editedProduct ? editedProduct.title : ''}
-                        initialValidity={!!editedProduct}
+                        initialValues={editedProduct ? editedProduct.title : ''}
+                        initiallyValid={!!editedProduct}
                         required
                     />
                     <Input
@@ -129,8 +129,8 @@ const EditProductScreen = props => {
                         keyboardType='default'
                         returnKeyType='next'
                         onInputChange={inputChangeHandler}
-                        initialValue={editedProduct ? editedProduct.imageUrl : ''}
-                        initialValidity={!!editedProduct}
+                        initialValues={editedProduct ? editedProduct.imageUrl : ''}
+                        initiallyValid={!!editedProduct}
                         required
                     />
                     {editedProduct ? null : (
@@ -155,8 +155,8 @@ const EditProductScreen = props => {
                         multiline
                         numberOfLines={3}
                         onInputChange={inputChangeHandler}
-                        initialValue={editedProduct ? editedProduct.description : ''}
-                        initialValidity={!!editedProduct}
+                        initialValues={editedProduct ? editedProduct.description : ''}
+                        initiallyValid={!!editedProduct}
                         required
                         minLength={5}
                     />
