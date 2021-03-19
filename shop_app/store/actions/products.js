@@ -9,25 +9,34 @@ const BASE_URL = 'https://shopapp-25344-default-rtdb.firebaseio.com/products.jso
 
 export const fetchProducts = () => {
     return async dispatch => {
-        const response = await fetch(BASE_URL)
+        try {
+            const response = await fetch(BASE_URL)
 
-        const resData = await response.json()
-        const loadedProducts = []
+            if (!response.ok) {
+                throw new Error('Something went wrong!')
+            }
 
-        for (const key in resData) {
-            loadedProducts.push(
-                new Product(
-                    key,
-                    'u1',
-                    resData[key].title,
-                    resData[key].imageUrl,
-                    resData[key].description,
-                    resData[key].price
+            const resData = await response.json()
+            const loadedProducts = []
+
+            for (const key in resData) {
+                loadedProducts.push(
+                    new Product(
+                        key,
+                        'u1',
+                        resData[key].title,
+                        resData[key].imageUrl,
+                        resData[key].description,
+                        resData[key].price
+                    )
                 )
-            )
-        }
+            }
 
-        dispatch({ type: SET_PRODUCTS, products: loadedProducts })
+            dispatch({ type: SET_PRODUCTS, products: loadedProducts })
+        } catch (err) {
+            //send to custom analytics server
+            throw err
+        }
     }
 }
 
