@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { View, FlatList, Platform, StyleSheet, Alert, ActivityIndicator } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -13,24 +13,29 @@ import * as ordersActions from '../../store/actions/orders'
 const OrdersScreen = props => {
 
     const [isLoading, setIsLoading] = useState(false)
+    const [isRefreshing, setIsRefreshing] = useState(false)
     const [error, setError] = useState()
 
     const orders = useSelector(state => state.orders.orders)
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                setError(null)
-                setIsLoading(true)
-                await dispatch(ordersActions.fetchOrders())
-            } catch (err) {
-                setError(err.message)
-            }
-            setIsLoading(false)
+    const fetchOrders = useCallback(async () => {
+        try {
+            setError(null)
+            setIsRefreshing(true)
+            await dispatch(ordersActions.fetchOrders())
+        } catch (err) {
+            setError(err.message)
         }
-        fetchOrders()
-    }, [dispatch])
+        setIsRefreshing(false)
+    }, [dispatch, setIsRefreshing, setError])
+
+    useEffect(() => {
+        setIsLoading(true)
+        fetchOrders().then(
+            setIsLoading(false)
+        )
+    }, [fetchOrders, setIsLoading])
 
     useEffect(() => {
         if (error) {
@@ -48,6 +53,8 @@ const OrdersScreen = props => {
 
     return (
         <FlatList
+            onRefresh={fetchOrders}
+            refreshing={isRefreshing}
             data={orders}
             keyExtractor={item => item.id}
             renderItem={itemData =>
