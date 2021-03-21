@@ -1,0 +1,1 @@
+export default 'https://shopapp-25344-default-rtdb.firebaseio.com'

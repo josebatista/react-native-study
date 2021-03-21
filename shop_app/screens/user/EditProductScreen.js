@@ -1,9 +1,11 @@
-import React, { useEffect, useCallback, useReducer } from 'react'
-import { View, ScrollView, StyleSheet, Platform, Alert, KeyboardAvoidingView } from 'react-native'
+import React, { useState, useEffect, useCallback, useReducer } from 'react'
+import { View, ScrollView, StyleSheet, Platform, Alert, KeyboardAvoidingView, ActivityIndicator } from 'react-native'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import { useSelector, useDispatch } from 'react-redux'
 
 import * as productsActions from '../../store/actions/products'
+
+import Colors from '../../constants/Colors'
 
 import HeaderButton from '../../components/UI/HeaderButton'
 import Input from '../../components/UI/Input'
@@ -38,6 +40,9 @@ const formReducer = (state, action) => {
 
 const EditProductScreen = props => {
 
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState()
+
     const prodId = props.navigation.getParam('productId')
     const editedProduct = useSelector(state =>
         state.products.userProducts.find(prod => prod.id === prodId)
@@ -61,31 +66,44 @@ const EditProductScreen = props => {
         formIsValid: editedProduct ? true : false
     })
 
-    const submitHandler = useCallback(() => {
+    useEffect(() => {
+        if (error) {
+            Alert.alert('An error occurred!', error, [{ text: 'Okay' }])
+        }
+    }, [error])
+
+    const submitHandler = useCallback(async () => {
         if (!formState.formIsValid) {
             Alert.alert('Wrong Input!', 'Please check the errors in the form.', [{ text: 'Okay' }])
             return
         }
-        if (editedProduct) {
-            dispatch(
-                productsActions.updateProduct(
-                    prodId,
-                    formState.inputValues.title,
-                    formState.inputValues.description,
-                    formState.inputValues.imageUrl
+        setError(null)
+        setIsLoading(true)
+        try {
+            if (editedProduct) {
+                await dispatch(
+                    productsActions.updateProduct(
+                        prodId,
+                        formState.inputValues.title,
+                        formState.inputValues.description,
+                        formState.inputValues.imageUrl
+                    )
                 )
-            )
-        } else {
-            dispatch(
-                productsActions.createProduct(
-                    formState.inputValues.title,
-                    formState.inputValues.description,
-                    formState.inputValues.imageUrl,
-                    +formState.inputValues.price
+            } else {
+                await dispatch(
+                    productsActions.createProduct(
+                        formState.inputValues.title,
+                        formState.inputValues.description,
+                        formState.inputValues.imageUrl,
+                        +formState.inputValues.price
+                    )
                 )
-            )
+            }
+            props.navigation.goBack()
+        } catch (err) {
+            setError(err.message)
         }
-        props.navigation.goBack()
+        setIsLoading(false)
     }, [dispatch, prodId, formState])
 
     useEffect(() => {
@@ -100,6 +118,14 @@ const EditProductScreen = props => {
             input: inputIdentifier
         })
     }, [dispatchFormState])
+
+    if (isLoading) {
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size='large' color={Colors.primary} />
+            </View>
+        )
+    }
 
     return (
         <KeyboardAvoidingView
@@ -118,8 +144,8 @@ const EditProductScreen = props => {
                         autoCorrect
                         returnKeyType='next'
                         onInputChange={inputChangeHandler}
-                        initialValue={editedProduct ? editedProduct.title : ''}
-                        initialValidity={!!editedProduct}
+                        initialValues={editedProduct ? editedProduct.title : ''}
+                        initiallyValid={!!editedProduct}
                         required
                     />
                     <Input
@@ -129,8 +155,8 @@ const EditProductScreen = props => {
                         keyboardType='default'
                         returnKeyType='next'
                         onInputChange={inputChangeHandler}
-                        initialValue={editedProduct ? editedProduct.imageUrl : ''}
-                        initialValidity={!!editedProduct}
+                        initialValues={editedProduct ? editedProduct.imageUrl : ''}
+                        initiallyValid={!!editedProduct}
                         required
                     />
                     {editedProduct ? null : (
@@ -155,8 +181,8 @@ const EditProductScreen = props => {
                         multiline
                         numberOfLines={3}
                         onInputChange={inputChangeHandler}
-                        initialValue={editedProduct ? editedProduct.description : ''}
-                        initialValidity={!!editedProduct}
+                        initialValues={editedProduct ? editedProduct.description : ''}
+                        initiallyValid={!!editedProduct}
                         required
                         minLength={5}
                     />
@@ -181,6 +207,11 @@ EditProductScreen.navigationOptions = navData => {
 }
 
 const styles = StyleSheet.create({
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     form: {
         margin: 20
     }

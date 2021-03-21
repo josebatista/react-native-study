@@ -1,5 +1,5 @@
-import React from 'react'
-import { FlatList, Button, Platform, Alert } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, FlatList, Button, Platform, Alert, ActivityIndicator, StyleSheet } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 
@@ -11,6 +11,9 @@ import * as productsActions from '../../store/actions/products'
 import Colors from '../../constants/Colors'
 
 const UserProductsScreen = props => {
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState()
+
     const userProducts = useSelector(state => state.products.userProducts)
 
     const dispatch = useDispatch()
@@ -19,11 +22,36 @@ const UserProductsScreen = props => {
         props.navigation.navigate('EditProduct', { productId: id })
     }
 
+    useEffect(() => {
+        if (error) {
+            Alert.alert('An error occurred!', error, [{ text: 'Okay!' }])
+        }
+    }, [error])
+
     const deleteHandler = (id) => {
         Alert.alert('Are you sure?', 'Do you really want to delete this item?', [
             { text: 'No', style: 'default' },
-            { text: 'Yes', style: 'destructive', onPress: () => { dispatch(productsActions.deleteProduct(id)) } }
+            {
+                text: 'Yes', style: 'destructive', onPress: async () => {
+                    setError(null)
+                    try {
+                        setIsLoading(true)
+                        await dispatch(productsActions.deleteProduct(id))
+                    } catch (err) {
+                        setError(err.message)
+                    }
+                    setIsLoading(false)
+                }
+            }
         ])
+    }
+
+    if (isLoading) {
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size='large' color={Colors.primary} />
+            </View>
+        )
     }
 
     return (
@@ -72,5 +100,13 @@ UserProductsScreen.navigationOptions = navData => {
         </HeaderButtons>
     }
 }
+
+const styles = StyleSheet.create({
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
+})
 
 export default UserProductsScreen
