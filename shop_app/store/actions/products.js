@@ -5,7 +5,7 @@ export const CREATE_PRODUCT = 'CREATE_PRODUCT'
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
 export const SET_PRODUCTS = 'SET_PRODUCTS'
 
-const BASE_URL = 'https://shopapp-25344-default-rtdb.firebaseio.com'
+import BASE_URL from '../../constants/BaseURL'
 
 export const fetchProducts = () => {
     return async dispatch => {
