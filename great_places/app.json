@@ -1,0 +1,12 @@
+{
+  "name": "great_places",
+  "displayName": "great_places",
+  "expo": {
+    "name": "great_places",
+    "slug": "great_places",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
