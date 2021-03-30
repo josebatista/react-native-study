@@ -10,7 +10,7 @@ import ReduxThunk from 'redux-thunk'
 
 //import { composeWithDevTools } from 'redux-devtools-extension'
 
-import ShopNavigator from './navigation/ShopNavigator'
+import NavigationContainer from './navigation/NavigationContainer'
 
 import productsReducer from './store/reducers/products'
 import cartReducer from './store/reducers/cart'
@@ -48,7 +48,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <StatusBar style="auto" />
-      <ShopNavigator />
+      <NavigationContainer />
     </Provider>
   );
 }
